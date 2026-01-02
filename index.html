@@ -12,7 +12,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <style>
-        /* Custom Scrollbar for the timeline */
         input[type=range] {
             -webkit-appearance: none; 
             background: transparent; 
@@ -35,18 +34,16 @@
             border-radius: 2px;
         }
         
-        /* Map Marker Square Style */
         .storm-marker {
             transition: background-color 0.1s linear;
             box-shadow: 0 0 8px rgba(0,0,0,0.8);
             cursor: pointer;
         }
         .storm-marker:hover {
-            border-color: #3b82f6 !important; /* Blue border on hover */
+            border-color: #3b82f6 !important;
             border-width: 2px !important;
         }
         
-        /* Label styling */
         .storm-label {
             background: rgba(0,0,0,0.7);
             border: none;
@@ -61,7 +58,6 @@
             border: none;
         }
 
-        /* Toggle Switch */
         .toggle-checkbox:checked {
             right: 0;
             border-color: #68D391;
@@ -70,21 +66,18 @@
             background-color: #68D391;
         }
 
-        /* Draggable Panel Styles */
         .draggable-panel {
             position: fixed;
-            min-width: 300px; /* Enforce horizontal format */
+            min-width: 300px;
             box-sizing: border-box;
             user-select: none;
-            touch-action: none; /* Crucial for touch dragging */
-            cursor: move; /* Set default cursor to move for the whole panel */
+            touch-action: none;
+            cursor: move;
         }
-        /* Specific handle for controls panel, which still has one */
         #controlsPanel .drag-handle {
-            cursor: move; /* Indicates draggability */
+            cursor: move;
         }
         
-        /* Hidden state for controls */
         .controls-hidden #controlsContent {
             max-height: 0;
             padding-top: 0;
@@ -92,7 +85,7 @@
             overflow: hidden;
         }
         .controls-hidden .drag-handle button svg {
-             transform: rotate(180deg); /* Flip arrow up when hidden */
+             transform: rotate(180deg);
         }
     </style>
 </head>
@@ -170,7 +163,6 @@
     </div>
 
     <script>
-        // --- Configuration & State ---
         const mapConfig = {
             center: [20, -90], 
             zoom: 3,
@@ -179,13 +171,13 @@
         };
 
         const colors = {
-            td: '#2563eb', // Blue
-            ts: '#22c55e', // Green
-            c1: '#facc15', // Yellow
-            c2: '#fb923c', // Orange
-            c3: '#ea580c', // Reddish Orange
-            c4: '#dc2626', // Red
-            c5: '#ec4899'  // Pink
+            td: '#2563eb',
+            ts: '#22c55e',
+            c1: '#facc15',
+            c2: '#fb923c',
+            c3: '#ea580c',
+            c4: '#dc2626',
+            c5: '#ec4899'
         };
 
         let map;
@@ -197,21 +189,16 @@
         let lastFrameTime = 0;
         const stormLayers = {}; 
         
-        // Tracking State
-        let currentlyTrackedStorm = null; // Name of storm camera is locked on
-        let previouslyActiveStorms = new Set(); // To detect new formations
+        let currentlyTrackedStorm = null;
+        let previouslyActiveStorms = new Set();
         let autoFocusEnabled = false;
 
-        // --- Time Configuration ---
         const SIM_MS_PER_DAY = 86400000;
         const REAL_MS_PER_DAY = 5000;
         const SPEED_FACTOR = SIM_MS_PER_DAY / REAL_MS_PER_DAY; 
 
-        // --- Draggable Panel Logic ---
-        // MODIFIED: makeDraggable now takes an optional handleSelector
         function makeDraggable(elementId, handleSelector = null) {
             const element = document.getElementById(elementId);
-            // If a handle selector is provided, use the handle, otherwise use the element itself
             const handle = handleSelector ? element.querySelector(handleSelector) : element;
             
             let isDragging = false;
@@ -222,12 +209,11 @@
             let xOffset = 0;
             let yOffset = 0;
 
-            if (!handle) return; // Must have a target
+            if (!handle) return;
 
             const dragStart = (e) => {
                 e = e.touches ? e.touches[0] : e;
                 
-                // Get the current translation values if they exist
                 const style = window.getComputedStyle(element);
                 const matrix = new DOMMatrixReadOnly(style.transform);
                 xOffset = matrix.m41;
@@ -255,23 +241,19 @@
                     currentX = e.clientX - initialX;
                     currentY = e.clientY - initialY;
 
-                    // Apply translation
                     element.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
                 }
             }
 
-            // Mouse events
             handle.addEventListener('mousedown', dragStart);
             document.addEventListener('mouseup', dragEnd);
             document.addEventListener('mousemove', drag);
 
-            // Touch events for mobile responsiveness
             handle.addEventListener('touchstart', dragStart, { passive: false });
             document.addEventListener('touchend', dragEnd);
             document.addEventListener('touchmove', drag, { passive: false });
         }
 
-        // --- Initialization ---
         function initMap() {
             map = L.map('map', {
                 center: mapConfig.center,
@@ -283,13 +265,11 @@
             
             L.control.zoom({ position: 'topright' }).addTo(map);
 
-            // NASA GIBS Blue Marble Layer
             L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief_Bathymetry/default//GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg', {
                 attribution: 'NASA GIBS',
                 maxZoom: 8
             }).addTo(map);
 
-            // Break tracking if user manually drags map
             map.on('dragstart', () => {
                 if (currentlyTrackedStorm) {
                     stopTracking();
@@ -297,7 +277,6 @@
             });
         }
 
-        // --- Toggle Logic ---
         document.getElementById('autoFocusToggle').addEventListener('change', (e) => {
             autoFocusEnabled = e.target.checked;
         });
@@ -305,7 +284,6 @@
         document.getElementById('hideControlsBtn').addEventListener('click', () => {
             const panel = document.getElementById('controlsPanel');
             panel.classList.toggle('controls-hidden');
-            // Stop playing if controls are hidden
             if (panel.classList.contains('controls-hidden') && isPlaying) {
                  isPlaying = false;
                  document.getElementById('playPauseBtn').textContent = '▶';
@@ -326,7 +304,6 @@
             statusEl.classList.add('hidden');
         }
 
-        // --- Helpers ---
         function getCategoryColor(knots) {
             if (typeof knots === 'string') {
                 knots = parseInt(knots.replace(/[^0-9]/g, ''), 10);
@@ -358,7 +335,6 @@
             return lng;
         }
 
-        // --- Data Parsing ---
         document.getElementById('fileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -371,7 +347,6 @@
                     const rawData = JSON.parse(event.target.result);
                     processData(rawData);
                 } catch (err) {
-                    // Using a custom message box instead of alert()
                     const messageBox = document.createElement('div');
                     messageBox.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-700 text-white p-6 rounded-lg shadow-2xl z-[9999]';
                     messageBox.innerHTML = `<strong>Error Parsing JSON:</strong> ${err.message}`;
@@ -406,7 +381,6 @@
             });
 
             if (minT === Infinity) {
-                // Using a custom message box instead of alert()
                 const messageBox = document.createElement('div');
                 messageBox.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-700 text-white p-6 rounded-lg shadow-2xl z-[9999]';
                 messageBox.innerHTML = '<strong>Data Error:</strong> No valid time data found in the file.';
@@ -425,14 +399,12 @@
             timeline.value = startTime;
             timeline.disabled = false;
 
-            // Reset tracking
             stopTracking();
             previouslyActiveStorms.clear();
 
             updateDisplay();
         }
 
-        // --- Animation Logic ---
         function updateDisplay() {
             document.getElementById('dateDisplay').textContent = formatDate(currentTime);
             document.getElementById('timeline').value = currentTime;
@@ -450,38 +422,29 @@
                     activeCount++;
                     currentActiveStorms.add(storm.name);
                     
-                    // Render storm and get its current position
                     const pos = renderStorm(storm);
                     
-                    // Check for new formation logic
                     if (autoFocusEnabled && !previouslyActiveStorms.has(storm.name)) {
-                        // New storm formed!
                         startTracking(storm.name);
-                        // Fly to it initially for effect
                         if (pos) map.flyTo(pos, 6, { duration: 1.5 });
                     }
 
-                    // If this is the tracked storm, capture position
                     if (currentlyTrackedStorm === storm.name && pos) {
                         trackPosition = pos;
                     }
 
                 } else {
                     removeStorm(storm);
-                    // If tracked storm dissipates
                     if (currentlyTrackedStorm === storm.name) {
                         stopTracking();
                     }
                 }
             });
 
-            // Update state for next frame
             previouslyActiveStorms = currentActiveStorms;
             document.getElementById('stormCount').textContent = `Active Storms: ${activeCount}`;
 
-            // Apply camera tracking if active
             if (trackPosition) {
-                // Use panTo for smooth frame-by-frame following
                 map.panTo(trackPosition, { animate: false });
             }
         }
@@ -518,7 +481,6 @@
             const color = getCategoryColor(curSpeed);
             const latLng = [curLat, normalizeLng(curLng)];
 
-            // Create or Update Marker
             if (!stormLayers[storm.name]) {
                 const iconHtml = `<div class="storm-marker" style="
                         width: 14px; 
@@ -535,7 +497,6 @@
 
                 const marker = L.marker(latLng, {icon: icon}).addTo(map);
                 
-                // Tooltip
                 marker.bindTooltip(storm.name, {
                     permanent: true, 
                     direction: 'right',
@@ -543,10 +504,9 @@
                     offset: [10, 0]
                 });
 
-                // Click event for manual tracking
                 marker.on('click', () => {
                     startTracking(storm.name);
-                    map.flyTo(latLng, 6); // Zoom in on click
+                    map.flyTo(latLng, 6);
                 });
 
                 const trail = L.polyline([], {
@@ -576,7 +536,6 @@
                     layer.lastColor = newColor;
                 }
 
-                // Trail update
                 const trailPoints = [];
                 for(let i=0; i<=idx; i++) {
                     trailPoints.push([storm.path[i].lat, normalizeLng(storm.path[i].long)]);
@@ -596,7 +555,6 @@
             }
         }
 
-        // --- Controls Logic ---
         const playBtn = document.getElementById('playPauseBtn');
         const timelineInput = document.getElementById('timeline');
 
@@ -649,12 +607,9 @@
             requestAnimationFrame(animate);
         }
 
-        // --- Startup ---
         window.onload = function() {
             initMap();
-            // MODIFIED: 'datePanel' now uses the element itself as the drag handle (handleSelector=null)
             makeDraggable('datePanel');
-            // 'controlsPanel' still uses the '.drag-handle' selector
             makeDraggable('controlsPanel', '.drag-handle');
         }
 
