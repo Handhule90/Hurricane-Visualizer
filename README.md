@@ -16,5 +16,7 @@ it uses data from IBTRACS website, inspired by https://github.com/TreacherousDev
 
 once ur done getting the json file u go to the website then import ur json file then click play.
 
+updated: april 6 2026, version 2
+
 yay
 https://handhule90.github.io/Hurricane-Visualizer/
