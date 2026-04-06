@@ -18,48 +18,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px
 input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: rgba(255,255,255,.3); border-radius: 2px; }
 
 
-.day-ring-widget {
-  position: relative;
-  width: 90px; height: 90px;
-  flex-shrink: 0;
-}
-.day-ring-widget svg { width: 100%; height: 100%; }
-.ring-track { fill: none; stroke: #2a2a3a; stroke-width: 6; }
-.ring-seg {
-  fill: none;
-  stroke: var(--color);
-  stroke-width: 6;
-  stroke-linecap: round;
-  /* Circumference = 251.33, Quarter = 62.83 */
-  stroke-dasharray: 62.83 251.33;
-  stroke-dashoffset: 62.83; /* Start hidden */
-  transform: rotate(var(--start));
-  transform-origin: 50px 50px;
-  transition: stroke-dashoffset 0.05s linear;
-  filter: drop-shadow(0 0 2px var(--color));
-}
-#ringClock {
-  fill: #fff;
-  font-size: 16px;
-  font-family: ui-monospace, monospace;
-  font-weight: 700;
-  pointer-events: none;
-}
-.ring-labels {
-  position: absolute; inset: 0;
-  pointer-events: none;
-}
-.ring-labels span {
-  position: absolute;
-  font-size: 9px;
-  color: #888;
-  font-family: monospace;
-  font-weight: 600;
-}
-.ring-labels span:nth-child(1) { top: -2px; left: 50%; transform: translateX(-50%); }
-.ring-labels span:nth-child(2) { right: -2px; top: 50%; transform: translateY(-50%); }
-.ring-labels span:nth-child(3) { bottom: -2px; left: 50%; transform: translateX(-50%); }
-.ring-labels span:nth-child(4) { left: -2px; top: 50%; transform: translateY(-50%); }
+
 
 .storm-svg-layer svg {
     width: 100%;
