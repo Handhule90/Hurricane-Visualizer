@@ -61,35 +61,6 @@ let syncStartTime = null;
 let activeSVGElements = [];
 
 
-function updateDayRing(timestamp) {
-  const d = new Date(timestamp);
-  const h = d.getUTCHours();
-  const m = d.getUTCMinutes();
-  const s = d.getUTCSeconds();
-  
-
-  const totalHours = h + m / 60 + s / 3600;
-  const quadrant = Math.floor(totalHours / 6) % 4;
-  const progress = (totalHours % 6) / 6;
-  
-  for (let i = 0; i < 4; i++) {
-    const seg = document.getElementById(`q${i + 1}`);
-    if (!seg) continue;
-    
-    let offset;
-    if (i < quadrant) offset = 0;             
-    else if (i === quadrant) offset = 62.83 * (1 - progress); // Current: filling
-    else offset = 62.83;                       // Future: hidden
-    
-    seg.style.strokeDashoffset = offset;
-  }
-  
-  // Update center clock
-  const hh = String(h).padStart(2, '0');
-  const mm = String(m).padStart(2, '0');
-  document.getElementById('ringClock').textContent = `${hh}:${mm}`;
-}
-
 function startSVGSync() {
     function tick(now) {
         if (!syncStartTime) syncStartTime = now;
