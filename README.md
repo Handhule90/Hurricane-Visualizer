@@ -1,6 +1,8 @@
 # Hurricane-Visualizer
 a website that allows you to visualize hurricanes by JSON data.
 
+![HW SVG](./hw.svg)
+
 you need to first run the python sript in goolge colab (year, month, basin)
 ```!pip install pandas requests xarray netCDF4```
 
