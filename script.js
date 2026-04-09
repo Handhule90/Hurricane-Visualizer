@@ -189,7 +189,6 @@ function initMap() {
     map=L.map('map',{center:mapConfig.center,zoom:mapConfig.zoom,minZoom:mapConfig.minZoom,maxZoom:mapConfig.maxZoom,worldCopyJump:true,attributionControl:false,zoomControl:false});
     L.control.zoom({position:'topright'}).addTo(map);
     L.tileLayer('https://gibs-a.earthdata.nasa.gov/wmts/epsg3857/std/BlueMarble_NextGeneration/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg',{attribution:'NASA',maxZoom:8}).addTo(map);
-    L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_terrain_labels/{z}/{x}/{y}{r}.{ext}',{minZoom:0,maxZoom:18,ext:'png',attribution:'Stadia Maps'}).addTo(map);
     map.on('dragstart',()=>{if(currentlyTrackedStorm)stopTracking()});
     document.getElementById('parToggle').addEventListener('change',e=>{
         if(e.target.checked)parLayer=L.polygon(PAR_BOUNDS,{className:'par-highlight'}).addTo(map);
