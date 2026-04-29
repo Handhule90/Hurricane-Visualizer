@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hurricane Season Animator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-900 text-white h-screen flex flex-col overflow-hidden">
+
+
+<div id="loadingOverlay">
+    <div id="loadingText" class="text-lg">Loading</div>
+    <div id="loadingPercent" class="text-2xl font-bold mt-2">0 %</div>
+    <div id="loadingBar"><div id="loadingProgress"></div></div>
+</div>
+
+
+<header class="bg-gray-800 p-4 shadow-lg z-20 flex flex-wrap justify-between items-center gap-4">
+    <div class="flex items-center gap-4">
+        <h1 class="text-xl font-bold tracking-wider text-blue-400">HURRICANE<span class="text-white">VISUALIZER</span></h1>
+        <div class="relative"><input type="file" id="fileInput" accept=".json" class="hidden"><label for="fileInput" class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded text-sm font-semibold transition">Upload JSON</label></div>
+        <div class="flex flex-col">
+            <span id="fileNameDisplay" class="text-xs text-gray-400 italic">No file loaded</span>
+            <span id="trackingStatus" class="text-xs text-green-400 font-mono hidden">Tracking: None</span>
+            <div class="text-xs text-gray-400 font-mono mt-1" id="stormCount">Active Storms: 0</div>
+            <div class="text-xs text-gray-500 mt-1">Made by: PGFLIMSXD/handhule90/nlexsctex ・ Discord: nlexsctex</div>
+        </div>
+    </div>
+    <div class="flex items-center gap-6">
+        <div class="flex items-center gap-2"><span class="text-xs font-semibold uppercase text-gray-400">Highlight</span><div class="relative inline-block w-10 mr-2 align-middle select-none"><input type="checkbox" id="parToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"><label for="parToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"></label></div></div>
+        <div class="flex items-center gap-2"><span class="text-xs font-semibold uppercase text-gray-400">Auto-Focus</span><div class="relative inline-block w-10 mr-2 align-middle select-none"><input type="checkbox" id="autoFocusToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"><label for="autoFocusToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"></label></div></div>
+        <div class="hidden md:flex gap-2 text-xs font-mono">
+            <div class="flex items-center gap-1"><div class="w-3 h-3 legend-td border border-white"></div>TD</div>
+            <div class="flex items-center gap-1"><div class="w-3 h-3 legend-ts border border-white"></div>TS</div>
+            <div class="flex items-center gap-1"><div class="w-3 h-3 legend-c1 border border-white"></div>C1</div>
+            <div class="flex items-center gap-1"><div class="w-3 h-3 legend-c2 border border-white"></div>C2</div>
+            <div class="flex items-center gap-1"><div class="w-3 h-3 legend-c3 border border-white"></div>C3</div>
+            <div class="flex items-center gap-1"><div class="w-3 h-3 legend-c4 border border-white"></div>C4</div>
+            <div class="flex items-center gap-1"><div class="w-3 h-3 legend-c5 border border-white"></div>C5</div>
+        </div>
+    </div>
+</header>
+
+
+<div id="map" class="flex-grow bg-black z-10"></div>
+
+
+<div id="dateContainer" class="draggable-panel" style="position:fixed;left:0;right:0;width:auto;bottom:100px;height:100px;z-index:40;background:rgba(0,49,191,0.8);cursor:move">
+    <div id="datePanel" class="p-4 rounded-lg shadow-2xl z-40 flex items-center gap-3" style="position:absolute;left:50px;bottom:0;width:100%;height:100%;background:transparent;pointer-events:none">
+        <span id="dateDisplay" class="text-xl font-mono font-bold text-white">--:-- UTC, -- --- ----</span>
+    </div>
+</div>
+
+
+<div id="controlsPanel" class="draggable-panel p-4 bg-gray-800 rounded-lg shadow-2xl z-50 border border-gray-700" style="right:50px;bottom:30px">
+    <div class="drag-handle w-full flex justify-between items-center text-gray-400 mb-3 p-1 rounded hover:bg-gray-700 transition">
+        <span class="text-xs font-semibold uppercase tracking-wider">Playback Controls</span>
+        <button id="hideControlsBtn" class="p-1 rounded hover:bg-gray-700 text-white transition transform duration-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></button>
+    </div>
+    <div id="controlsContent" class="transition-all duration-300 max-h-40 overflow-hidden pt-2 border-t border-gray-700">
+        <div class="flex items-center justify-between">
+            <button id="playPauseBtn" class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-white text-gray-900 rounded-full hover:bg-gray-200 transition font-bold">▶</button>
+            <div class="flex-grow ml-4"><input type="range" id="timeline" min="0" max="100" value="0" class="w-full" disabled></div>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

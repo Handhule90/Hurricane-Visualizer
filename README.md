@@ -1,0 +1,24 @@
+# Hurricane-Visualizer
+a website that allows you to visualize hurricanes by JSON data.
+
+![HW SVG](./hw.svg)
+
+you need to first run the python sript in goolge colab (year, month, basin)
+```!pip install pandas requests xarray netCDF4```
+
+basin types: 
+Northern Atlantic
+Eastern Pacific
+Western Pacific
+Northern Indian
+Southern Indian
+Southern Pacific
+
+it uses data from IBTRACS website, inspired by https://github.com/TreacherousDev/Stormchaser
+
+once ur done getting the json file u go to the website then import ur json file then click play.
+
+updated: april 6 2026, version 2
+
+yay
+https://handhule90.github.io/Hurricane-Visualizer/
